@@ -10,21 +10,18 @@ private:
 	int grade;
 
 public:
-	// Конструкторы и деструктор
+
 	Bureaucrat(const std::string &name, int grade);
 	Bureaucrat(const Bureaucrat &other);
 	Bureaucrat &operator=(const Bureaucrat &other);
 	~Bureaucrat();
 
-	// Геттеры
 	const std::string &getName() const;
 	int getGrade() const;
 
-	// Методы для изменения рейтинга
-	void incrementGrade(); // Улучшение (уменьшение числа)
-	void decrementGrade(); // Ухудшение (увеличение числа)
+	void incrementGrade(); 
+	void decrementGrade(); 
 
-	// Исключения
 	class GradeTooHighException : public std::exception
 	{
 	public:

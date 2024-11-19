@@ -1,4 +1,3 @@
-// main.cpp
 #include "Bureaucrat.hpp"
 #include <iostream>
 
