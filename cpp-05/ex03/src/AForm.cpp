@@ -27,7 +27,6 @@ AForm &AForm::operator=(const AForm &other)
 
 AForm::~AForm() {}
 
-// Геттеры
 const std::string &AForm::getName() const
 {
 	return this->name;

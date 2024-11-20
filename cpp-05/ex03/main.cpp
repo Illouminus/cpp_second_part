@@ -1,4 +1,3 @@
-// main.cpp
 #include "Intern.hpp"
 #include "Bureaucrat.hpp"
 #include "AForm.hpp"

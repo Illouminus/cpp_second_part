@@ -13,13 +13,12 @@ private:
 	int grade;
 
 public:
-	// Конструкторы и деструктор
+
 	Bureaucrat(const std::string &name, int grade);
 	Bureaucrat(const Bureaucrat &other);
 	Bureaucrat &operator=(const Bureaucrat &other);
 	~Bureaucrat();
 
-	// Геттеры
 	const std::string &getName() const;
 	int getGrade() const;
 
@@ -28,7 +27,6 @@ public:
 	void signForm(AForm &form) const;
 	void executeForm(const AForm &form) const;
 
-	// Исключения
 	class GradeTooHighException : public std::exception
 	{
 	public:

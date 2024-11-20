@@ -1,4 +1,3 @@
-// main.cpp
 #include "Bureaucrat.hpp"
 #include "AForm.hpp"
 #include "ShrubberyCreationForm.hpp"
@@ -12,10 +11,9 @@ int main()
 
 	try
 	{
-		// Создание бюрократов
 		Bureaucrat alice("Alice", 50);
-		Bureaucrat bob("Bob", 1);				// Самый высокий уровень
-		Bureaucrat charlie("Charlie", 150); // Самый низкий уровень
+		Bureaucrat bob("Bob", 1);				
+		Bureaucrat charlie("Charlie", 150);
 
 		std::cout << alice << std::endl;
 		std::cout << bob << std::endl;
@@ -23,7 +21,6 @@ int main()
 
 		std::cout << "\n";
 
-		// Создание форм
 		ShrubberyCreationForm shrubForm("home");
 		RobotomyRequestForm robotForm("Bender");
 		PresidentialPardonForm pardonForm("Ford Prefect");
@@ -34,26 +31,23 @@ int main()
 
 		std::cout << "\n";
 
-		// Подписание форм
-		alice.signForm(shrubForm);	 // Должен подписать успешно (grade 50 <= 145)
-		alice.signForm(robotForm);	 // Должен подписать успешно (grade 50 <= 72)
-		alice.signForm(pardonForm); // Не должен подписать (grade 50 < 25)
+		alice.signForm(shrubForm);	 
+		alice.signForm(robotForm);	 
+		alice.signForm(pardonForm);
 
 		std::cout << "\n";
 
-		// Вывод статуса форм
 		std::cout << shrubForm << std::endl;
 		std::cout << robotForm << std::endl;
 		std::cout << pardonForm << std::endl;
 
 		std::cout << "\n";
 
-		// Выполнение форм
-		charlie.executeForm(shrubForm); // Не сможет выполнить (grade 150 > 137)
-		alice.executeForm(shrubForm);	  // Смогет выполнить
-		bob.executeForm(robotForm);	  // Смогет выполнить
-		bob.executeForm(pardonForm);	  // Не подписана, не сможет выполнить
-		bob.executeForm(pardonForm);	  // Попытка выполнить не подписанную форму
+		charlie.executeForm(shrubForm); // Cannot execute
+		alice.executeForm(shrubForm);	  // Can execute
+		bob.executeForm(robotForm);	  // Can execute
+		bob.executeForm(pardonForm);	  // Not signed yet cannot execute
+		bob.executeForm(pardonForm);	  // Try to execute not signed form
 	}
 	catch (const std::exception &e)
 	{
