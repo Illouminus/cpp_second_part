@@ -2,6 +2,7 @@
 	"files.associations": {
 		"exception": "cpp",
 		"string": "cpp",
-		"limits": "cpp"
+		"limits": "cpp",
+		"ostream": "cpp"
 	}
 }
