@@ -1,70 +1,104 @@
-// main.cpp
 #include <iostream>
 #include <string>
-#include "Iter.hpp"
-
-template <typename T>
-void printElement(const T &element)
-{
-	std::cout << element << " ";
-}
-
-template <typename T>
-void incrementElement(T &element)
-{
-	++element;
-}
-
-void appendExclamation(std::string &s)
-{
-	s += "!";
-}
-
-void toUpperCase(char &c)
-{
-	c = toupper(c);
-}
+#include "Array.hpp"
 
 int main()
 {
-	int intArray[] = {1, 2, 3, 4, 5};
-	size_t intLength = sizeof(intArray) / sizeof(intArray[0]);
+	std::cout << "Testing Array<int>:" << std::endl;
+	Array<int> intArray(5);
+	for (size_t i = 0; i < intArray.size(); ++i)
+	{
+		intArray[i] = static_cast<int>(i) * 10;
+	}
 
-	std::cout << "Original intArray: ";
-	iter(intArray, intLength, printElement<int>);
+	std::cout << "intArray elements: ";
+	for (size_t i = 0; i < intArray.size(); ++i)
+	{
+		std::cout << intArray[i] << " ";
+	}
 	std::cout << std::endl;
 
-	iter(intArray, intLength, incrementElement<int>);
+	Array<int> copiedIntArray = intArray;
 
-	std::cout << "intArray after increment: ";
-	iter(intArray, intLength, printElement<int>);
+	intArray[0] = 100;
+
+	std::cout << "After modifying intArray:" << std::endl;
+	std::cout << "intArray elements: ";
+	for (size_t i = 0; i < intArray.size(); ++i)
+	{
+		std::cout << intArray[i] << " ";
+	}
 	std::cout << std::endl;
 
-	std::string strArray[] = {"Hello", "World", "Iter", "Function"};
-	size_t strLength = sizeof(strArray) / sizeof(strArray[0]);
+	std::cout << "copiedIntArray elements: ";
+	for (size_t i = 0; i < copiedIntArray.size(); ++i)
+	{
+		std::cout << copiedIntArray[i] << " ";
+	}
+	std::cout << std::endl
+				 << std::endl;
 
-	std::cout << "Original strArray: ";
-	iter(strArray, strLength, printElement<std::string>);
+	std::cout << "Testing Array<std::string>:" << std::endl;
+	Array<std::string> strArray(3);
+	strArray[0] = "Hello";
+	strArray[1] = "World";
+	strArray[2] = "!";
+
+	std::cout << "strArray elements: ";
+	for (size_t i = 0; i < strArray.size(); ++i)
+	{
+		std::cout << strArray[i] << " ";
+	}
 	std::cout << std::endl;
 
-	iter(strArray, strLength, appendExclamation);
+	Array<std::string> assignedStrArray;
+	assignedStrArray = strArray;
 
-	std::cout << "strArray after appending '!': ";
-	iter(strArray, strLength, printElement<std::string>);
+	assignedStrArray[1] = "C++";
+
+	std::cout << "After modifying assignedStrArray:" << std::endl;
+	std::cout << "strArray elements: ";
+	for (size_t i = 0; i < strArray.size(); ++i)
+	{
+		std::cout << strArray[i] << " ";
+	}
 	std::cout << std::endl;
 
-	char charArray[] = {'a', 'b', 'c', 'd', 'e'};
-	size_t charLength = sizeof(charArray) / sizeof(charArray[0]);
+	std::cout << "assignedStrArray elements: ";
+	for (size_t i = 0; i < assignedStrArray.size(); ++i)
+	{
+		std::cout << assignedStrArray[i] << " ";
+	}
+	std::cout << std::endl
+				 << std::endl;
 
-	std::cout << "Original charArray: ";
-	iter(charArray, charLength, printElement<char>);
+	std::cout << "Testing empty Array<double>:" << std::endl;
+	Array<double> emptyArray;
+	std::cout << "emptyArray size: " << emptyArray.size() << std::endl;
+
+	try
+	{
+		emptyArray[0] = 3.14;
+	}
+	catch (const std::exception &e)
+	{
+		std::cout << "Exception caught: " << e.what() << std::endl;
+	}
 	std::cout << std::endl;
 
-	iter(charArray, charLength, toUpperCase);
+	std::cout << "Testing out-of-bounds access:" << std::endl;
+	Array<int> smallArray(2);
+	smallArray[0] = 1;
+	smallArray[1] = 2;
 
-	std::cout << "charArray after toupper: ";
-	iter(charArray, charLength, printElement<char>);
-	std::cout << std::endl;
+	try
+	{
+		std::cout << "Accessing smallArray[2]: " << smallArray[2] << std::endl;
+	}
+	catch (const std::exception &e)
+	{
+		std::cout << "Exception caught: " << e.what() << std::endl;
+	}
 
 	return 0;
 }
