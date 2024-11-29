@@ -25,15 +25,16 @@ RPN &RPN::operator=(const RPN &other)
 
 int RPN::evaluate(const std::string &expression) throw(const char *)
 {
+	stack.clear(); // Clear the stack before evaluating a new expression because the stack is a member variable of the class
 	std::istringstream iss(expression);
 	std::string token;
 
 	while (iss >> token)
 	{
 		// Check if the token is a number
-		if (token.length() == 1 && std::isdigit(token[0]))
+		if (!token.empty() && std::all_of(token.begin(), token.end(), ::isdigit))
 		{
-			int number = token[0] - '0';
+			int number = std::atoi(token.c_str());
 			stack.push_back(number);
 		}
 		// Check if the token is an operator
@@ -50,7 +51,7 @@ int RPN::evaluate(const std::string &expression) throw(const char *)
 			stack.pop_back();
 			int result;
 
-			// Perform the operation
+			// Perform the operation based on the operator
 			switch (token[0])
 			{
 			case '+':
@@ -70,7 +71,7 @@ int RPN::evaluate(const std::string &expression) throw(const char *)
 				result = a / b;
 				break;
 			default:
-				throw "Error: Unknow operator";
+				throw "Error: Unknown operator";
 			}
 			stack.push_back(result);
 		}

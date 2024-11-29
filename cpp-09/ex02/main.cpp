@@ -1,11 +1,27 @@
 #include "PmergeMe.hpp"
 
-int main(int argc, char **argv)
+int main(int argc, char *argv[])
 {
-	if (argc < 3)
+	PmergeMe sorter;
+
+	// Parsing input
+	if (!sorter.parseInput(argc, argv))
 	{
-		std::cout << "Invalid input! Usage: ./PmergeMe [array of positive integers to be sorted separated by spaces]" << std::endl;
-		return (1);
+		std::cerr << "Error" << std::endl;
+		return 1;
 	}
-	displaySort(argc, argv);
+
+	// Print the vector before sorting
+	sorter.printBefore();
+
+	// Sort the containers
+	sorter.sortContainers();
+
+	// Print the vector after sorting
+	sorter.printAfter();
+
+	// Print the time taken to sort the containers
+	sorter.printTimes();
+
+	return 0;
 }

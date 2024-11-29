@@ -1,7 +1,8 @@
+// RPN.hpp
 #pragma once
 
 #include <string>
-#include <vector>
+#include <list>
 
 class RPN
 {
@@ -13,5 +14,5 @@ public:
 	int evaluate(const std::string &expression) throw(const char *);
 
 private:
-	std::vector<int> stack;
+	std::list<int> stack;
 };

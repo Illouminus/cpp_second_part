@@ -1,39 +1,42 @@
-#pragma once
+// PmergeMe.hpp
+#ifndef PMERGEME_HPP
+#define PMERGEME_HPP
 
 #include <vector>
 #include <deque>
 #include <string>
-#include <sstream>
-#include <stdexcept>
 #include <ctime>
 #include <iostream>
+#include <iomanip>
 
 class PmergeMe
 {
+public:
+	PmergeMe();
+	~PmergeMe();
+	PmergeMe(const PmergeMe &other);
+	PmergeMe &operator=(const PmergeMe &other);
+
+	bool parseInput(int argc, char *argv[]);
+	void printBefore() const;
+	void printAfter() const;
+	void sortContainers();
+	void printTimes() const;
+
 private:
 	std::vector<int> vec;
 	std::deque<int> deq;
 
-	// Вспомогательные методы
-	bool isNumber(const std::string &str);
-	void parseArguments(int argc, char **argv);
-	void printBefore();
-	void printAfter();
+	// Timing variables in microseconds
+	double vecTime;
+	double deqTime;
 
-	// Алгоритм сортировки merge-insert для std::vector
-	void sortVector();
+	// Helper functions for sorting
+	void mergeInsertSortVector(std::vector<int> &data);
+	void mergeInsertSortDeque(std::deque<int> &data);
 
-	// Алгоритм сортировки merge-insert для std::deque
-	void sortDeque();
-
-public:
-	// Конструктор
-	PmergeMe();
-	PmergeMe(int argc, char **argv);
-	PmergeMe(const PmergeMe &other);
-	PmergeMe &operator=(const PmergeMe &other);
-	~PmergeMe();
-
-	// Основной метод для выполнения сортировки и вывода результатов
-	void execute();
+	// Timer function
+	double getTime() const;
 };
+
+#endif // PMERGEME_HPP

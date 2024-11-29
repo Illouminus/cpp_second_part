@@ -1,172 +1,225 @@
 #include "PmergeMe.hpp"
+#include <sstream>
+#include <algorithm>
+#include <stdexcept>
+#include <cstdlib>
 
-// ***** Constructors, destructor, operator= *****
-PmergeMe::PmergeMe() {}
-PmergeMe::PmergeMe(int argc, char **argv)
-{
-	if (argc < 2)
-		throw std::invalid_argument("Error: No input provided.");
-	parseArguments(argc, argv);
-}
-PmergeMe::PmergeMe(const PmergeMe &other)
-{
-	vec = other.vec;
-	deq = other.deq;
-}
+PmergeMe::PmergeMe() : vecTime(0.0), deqTime(0.0) {}
+PmergeMe::~PmergeMe() {}
+PmergeMe::PmergeMe(const PmergeMe &other) : vec(other.vec), deq(other.deq), vecTime(other.vecTime), deqTime(other.deqTime) {}
 PmergeMe &PmergeMe::operator=(const PmergeMe &other)
 {
-	if (this == &other)
-		return *this;
-	vec = other.vec;
-	deq = other.deq;
+	if (this != &other)
+	{
+		vec = other.vec;
+		deq = other.deq;
+		vecTime = other.vecTime;
+		deqTime = other.deqTime;
+	}
 	return *this;
 }
-PmergeMe::~PmergeMe() {}
 
-// ***** Member functions *****
-
-bool PmergeMe::isNumber(const std::string &str)
+// Parsing input
+bool PmergeMe::parseInput(int argc, char *argv[])
 {
-	for (size_t i = 0; i < str.size(); ++i)
+	if (argc < 2)
 	{
-		if (!std::isdigit(str[i]))
-			return false;
+		std::cerr << "Error: No input provided." << std::endl;
+		return false;
 	}
+
+	for (int i = 1; i < argc; ++i)
+	{
+		std::string arg = argv[i];
+		// Check if str are not empty
+		if (arg.empty())
+		{
+			std::cerr << "Error: Empty argument." << std::endl;
+			return false;
+		}
+		for (size_t j = 0; j < arg.length(); ++j)
+		{
+			if (!isdigit(arg[j]))
+			{
+				std::cerr << "Error: Invalid character '" << arg[j] << "' in argument." << std::endl;
+				return false;
+			}
+		}
+		// Convert str to int
+		int number;
+		std::istringstream iss(arg);
+		iss >> number;
+		if (number < 0)
+		{
+			std::cerr << "Error: Negative number '" << number << "' is not allowed." << std::endl;
+			return false;
+		}
+		vec.push_back(number);
+		deq.push_back(number);
+	}
+
 	return true;
 }
 
-// Parising input arguments
-void PmergeMe::parseArguments(int argc, char **argv)
-{
-	for (int i = 1; i < argc; ++i)
-	{
-		std::string arg(argv[i]);
-		// Remove leading and trailing whitespaces
-		arg.erase(0, arg.find_first_not_of(" \t\r\n"));
-		arg.erase(arg.find_last_not_of(" \t\r\n") + 1);
-
-		if (!isNumber(arg))
-			throw std::invalid_argument("Error: Non-numeric input detected.");
-
-		long num = std::atol(arg.c_str());
-		if (num <= 0 || num > 2147483647)
-			throw std::out_of_range("Error: Number out of range.");
-
-		vec.push_back(static_cast<int>(num));
-		deq.push_back(static_cast<int>(num));
-	}
-
-	if (vec.empty())
-		throw std::invalid_argument("Error: No valid numbers provided.");
-}
-
-// Print the original sequence
-void PmergeMe::printBefore()
+// Funtion to print the vector before sorting
+void PmergeMe::printBefore() const
 {
 	std::cout << "Before: ";
 	for (size_t i = 0; i < vec.size(); ++i)
 	{
-		std::cout << vec[i];
-		if (i != vec.size() - 1)
-			std::cout << " ";
+		std::cout << vec[i] << " ";
 	}
 	std::cout << std::endl;
 }
 
-// Вывод отсортированной последовательности
-void PmergeMe::printAfter()
+// Function to print the sorted vector
+void PmergeMe::printAfter() const
 {
-	std::cout << "After:  ";
+	std::cout << "After: ";
 	for (size_t i = 0; i < vec.size(); ++i)
 	{
-		std::cout << vec[i];
-		if (i != vec.size() - 1)
-			std::cout << " ";
+		std::cout << vec[i] << " ";
 	}
 	std::cout << std::endl;
 }
 
-// Algorithm for sorting merge-insert for std::vector
-void PmergeMe::sortVector()
+// Function to get the current time in microseconds
+double PmergeMe::getTime() const
 {
-	std::vector<int> temp(vec.size());
-	std::function<void(int, int)> mergeSort = [&](int left, int right)
-	{
-		if (left >= right)
-			return;
-		int mid = left + (right - left) / 2;
-		mergeSort(left, mid);
-		mergeSort(mid + 1, right);
-
-		int i = left, j = mid + 1, k = left;
-		while (i <= mid && j <= right)
-		{
-			if (vec[i] < vec[j])
-				temp[k++] = vec[i++];
-			else
-				temp[k++] = vec[j++];
-		}
-		while (i <= mid)
-			temp[k++] = vec[i++];
-		while (j <= right)
-			temp[k++] = vec[j++];
-		for (int l = left; l <= right; ++l)
-			vec[l] = temp[l];
-	};
-
-	mergeSort(0, vec.size() - 1);
+	return static_cast<double>(clock()) / CLOCKS_PER_SEC * 1000000.0;
 }
 
-// Along with the sorting algorithm for std::deque
-void PmergeMe::sortDeque()
+void PmergeMe::sortContainers()
 {
-	std::deque<int> temp(deq.size());
+	// Sort the containers - vector and deque
+	double startVec = getTime();
+	mergeInsertSortVector(vec);
+	double endVec = getTime();
+	vecTime = endVec - startVec;
 
-	std::function<void(int, int)> mergeSort = [&](int left, int right)
-	{
-		if (left >= right)
-			return;
-		int mid = left + (right - left) / 2;
-		mergeSort(left, mid);
-		mergeSort(mid + 1, right);
-
-		int i = left, j = mid + 1, k = left;
-		while (i <= mid && j <= right)
-		{
-			if (deq[i] < deq[j])
-				temp[k++] = deq[i++];
-			else
-				temp[k++] = deq[j++];
-		}
-		while (i <= mid)
-			temp[k++] = deq[i++];
-		while (j <= right)
-			temp[k++] = deq[j++];
-		for (int l = left; l <= right; ++l)
-			deq[l] = temp[l];
-	};
-
-	mergeSort(0, deq.size() - 1);
+	double startDeq = getTime();
+	mergeInsertSortDeque(deq);
+	double endDeq = getTime();
+	deqTime = endDeq - startDeq;
 }
 
-void PmergeMe::execute()
+// Vector sorting function
+void PmergeMe::mergeInsertSortVector(std::vector<int> &data)
 {
-	printBefore();
+	if (data.size() <= 1)
+		return;
 
-	// Sorting and measuring time for std::vector
-	std::clock_t startVec = std::clock();
-	sortVector();
-	std::clock_t endVec = std::clock();
-	double timeVec = static_cast<double>(endVec - startVec) / CLOCKS_PER_SEC * 1e6; // microseconds
+	// Step 1: Split into pairs and sort pairs
+	std::vector<std::pair<int, int> > pairs;
+	size_t i = 0;
+	while (i + 1 < data.size())
+	{
+		if (data[i] > data[i + 1])
+			pairs.push_back(std::make_pair(data[i + 1], data[i]));
+		else
+			pairs.push_back(std::make_pair(data[i], data[i + 1]));
+		i += 2;
+	}
 
-	// Sorting and measuring time for std::deque
-	std::clock_t startDeq = std::clock();
-	sortDeque();
-	std::clock_t endDeq = std::clock();
-	double timeDeq = static_cast<double>(endDeq - startDeq) / CLOCKS_PER_SEC * 1e6; // microseconds
+	// If odd number of elements, last element remains separate
+	bool hasOdd = false;
+	int lastElement = 0;
+	if (i < data.size())
+	{
+		hasOdd = true;
+		lastElement = data[i];
+	}
 
-	printAfter();
+	// Step 2: Extract minimum elements from pairs
+	std::vector<int> minElements;
+	std::vector<int> remainingElements;
+	for (size_t j = 0; j < pairs.size(); j++)
+	{
+		minElements.push_back(pairs[j].first);
+		remainingElements.push_back(pairs[j].second);
+	}
+	if (hasOdd)
+	{
+		minElements.push_back(lastElement);
+	}
 
-	std::cout << "Time to process a range of " << vec.size() << " elements with std::vector : " << timeVec << " us" << std::endl;
-	std::cout << "Time to process a range of " << deq.size() << " elements with std::deque  : " << timeDeq << " us" << std::endl;
+	// Step 3: Recursively sort the list of minimum elements
+	mergeInsertSortVector(minElements);
+
+	// Step 4: Insert remaining elements
+	for (size_t j = 0; j < remainingElements.size(); j++)
+	{
+		int element = remainingElements[j];
+		// Use std::lower_bound to find the insertion position
+		std::vector<int>::iterator it = std::lower_bound(minElements.begin(), minElements.end(), element);
+		minElements.insert(it, element);
+	}
+
+	// Step 5: Update the original list
+	data = minElements;
+}
+
+// Deque sorting function
+void PmergeMe::mergeInsertSortDeque(std::deque<int> &data)
+{
+	if (data.size() <= 1)
+		return;
+
+	// Step 1: Split into pairs and sort pairs
+	std::deque<std::pair<int, int> > pairs;
+	size_t i = 0;
+	while (i + 1 < data.size())
+	{
+		if (data[i] > data[i + 1])
+			pairs.push_back(std::make_pair(data[i + 1], data[i]));
+		else
+			pairs.push_back(std::make_pair(data[i], data[i + 1]));
+		i += 2;
+	}
+
+	// If odd number of elements, last element remains separate
+	bool hasOdd = false;
+	int lastElement = 0;
+	if (i < data.size())
+	{
+		hasOdd = true;
+		lastElement = data[i];
+	}
+
+	// Step 2: Extract minimum elements from pairs
+	std::deque<int> minElements;
+	std::deque<int> remainingElements;
+	for (size_t j = 0; j < pairs.size(); j++)
+	{
+		minElements.push_back(pairs[j].first);
+		remainingElements.push_back(pairs[j].second);
+	}
+	if (hasOdd)
+	{
+		minElements.push_back(lastElement);
+	}
+
+	// Step 3: Recursively sort the list of minimum elements
+	mergeInsertSortDeque(minElements);
+
+	// Step 4: Insert remaining elements
+	for (size_t j = 0; j < remainingElements.size(); j++)
+	{
+		int element = remainingElements[j];
+		// Use std::lower_bound to find the insertion position
+		std::deque<int>::iterator it = std::lower_bound(minElements.begin(), minElements.end(), element);
+		minElements.insert(it, element);
+	}
+
+	// Step 5: Update the original list
+	data = minElements;
+}
+
+void PmergeMe::printTimes() const
+{
+	std::cout << "Time to process a range of " << vec.size() << " elements with std::vector : ";
+	std::cout << std::fixed << std::setprecision(5) << vecTime << " us" << std::endl;
+
+	std::cout << "Time to process a range of " << deq.size() << " elements with std::deque : ";
+	std::cout << std::fixed << std::setprecision(5) << deqTime << " us" << std::endl;
 }
