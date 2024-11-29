@@ -1,4 +1,3 @@
-// main.cpp
 #include "BitcoinExchange.hpp"
 #include <iostream>
 #include <fstream>

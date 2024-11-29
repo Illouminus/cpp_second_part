@@ -1,4 +1,4 @@
-NAME = btc
+NAME = ex00
 
 CXX = c++
 CXXFLAGS = -Wall -Wextra -Werror -g -std=c++98
@@ -6,7 +6,7 @@ CXXFLAGS = -Wall -Wextra -Werror -g -std=c++98
 OBJDIR = obj
 
 SRCS = main.cpp \
-		src/BitcoinExchange.cpp 
+       src/PmergeMe.cpp \
 
 
 OBJS = $(addprefix $(OBJDIR)/, $(SRCS:.cpp=.o))
